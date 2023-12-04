@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ApexCandlesSeries } from '~/types/chartTypes';
 
 const BASE_URL = '';
 

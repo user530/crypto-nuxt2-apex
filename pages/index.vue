@@ -9,32 +9,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import ChartComponent, { ApexCandlesSeries } from '~/components/ChartComponent.vue';
-import ControlFormComponent, { IMarketFormData } from '~/components/ControlFormComponent.vue';
+import ChartComponent from '~/components/ChartComponent.vue';
+import ControlFormComponent from '~/components/ControlFormComponent.vue';
+import { ApexCandlesSeries } from '~/types/chartTypes';
+import { IRequestFormData } from '~/types/requestFormData';
 
 const isLoaded = ref<boolean>(false);
 const chartData = ref<ApexCandlesSeries[]>([]);
-// const chartOptions = ref<ApexOptions>({
-//     chart: {
-//         type: 'candlestick',
-//         height: 350
-//     },
-//     title: {
-//         text: 'Crypto chart',
-//         align: 'left'
-//     },
-//     xaxis: {
-//         type: 'datetime'
-//     },
-//     yaxis: {
-//         tooltip: {
-//             enabled: true
-//         }
-//     }
-// });
 
-
-const formSubmitHandler = (marketFormData: IMarketFormData) => {
+const formSubmitHandler = (marketFormData: IRequestFormData) => {
     console.log('FORM SUBMIT FIRED!');
     console.log(marketFormData);
     // VALIDATE DATA

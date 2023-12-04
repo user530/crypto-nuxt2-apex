@@ -8,16 +8,7 @@
 
 <script setup lang="ts">
 import { ApexOptions } from 'apexcharts';
-
-export interface ApexCandlesSeries {
-    name: string,
-    data: CandlePrice[],
-}
-
-interface CandlePrice {
-    x: Date,
-    y: [number, number, number, number],
-}
+import { ApexCandlesSeries } from '~/types/chartTypes';
 
 interface IChartComponent {
     chartWidth?: number,
