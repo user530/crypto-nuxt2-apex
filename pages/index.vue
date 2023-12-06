@@ -11,11 +11,15 @@
 import { onMounted, ref } from "vue";
 import ChartComponent from '~/components/ChartComponent.vue';
 import ControlFormComponent from '~/components/ControlFormComponent.vue';
-import { ApexCandlesSeries } from '~/types/chartTypes';
+import { ApexCandlesSeries, CandlePrice } from '~/types/chartTypes';
 import { IRequestFormData } from '~/types/requestFormData';
+import { IDataService } from '~/types/dataService';
+import { TwelveDataService } from '~/services/dataService';
+import { ValidationService } from '~/services/validationService';
 
 const isLoaded = ref<boolean>(false);
 const chartData = ref<ApexCandlesSeries[]>([]);
+const dataService = ref<IDataService<any, any>>(new TwelveDataService());
 
 const formSubmitHandler = (marketFormData: IRequestFormData) => {
     console.log('FORM SUBMIT FIRED!');
@@ -32,20 +36,24 @@ onMounted(async () => {
 
         const { dataSeries } = data;
 
-        if (dataSeries) {
-            const toDataset = dataSeries.map(
-                (dataItem: {
-                    x: number,
-                    y: number[]
-                }) => ({ x: new Date(dataItem.x), y: dataItem.y })
-            );
-            chartData.value = [{
-                name: 'series-1',
-                data: toDataset as any[]
-            }];
+        if (!dataSeries)
+            throw new Error('Failed to extract data series from the request!');
 
-            isLoaded.value = true;
-        }
+        const toDataset = dataSeries.map(
+            (dataItem: {
+                x: number,
+                y: number[]
+            }) => ({ x: new Date(dataItem.x), y: dataItem.y })
+        );
+
+        const newCandleDataset: ApexCandlesSeries[] = [{
+            name: 'series-1',
+            data: toDataset as CandlePrice[]
+        }];
+
+        chartData.value = newCandleDataset;
+
+        isLoaded.value = true;
     } catch (error) {
         console.error(error);
     }
