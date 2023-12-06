@@ -12,20 +12,35 @@ import { onMounted, ref } from "vue";
 import ChartComponent from '~/components/ChartComponent.vue';
 import ControlFormComponent from '~/components/ControlFormComponent.vue';
 import { ApexCandlesSeries, CandlePrice } from '~/types/chartTypes';
-import { IRequestFormData } from '~/types/requestFormData';
+import { IRequestFormData, RequestFormDataDTO } from '~/types/requestFormData';
+import { TwelveDataAPI } from '~/types/twelveDataAPI';
 import { IDataService } from '~/types/dataService';
 import { TwelveDataService } from '~/services/dataService';
 import { ValidationService } from '~/services/validationService';
 
 const isLoaded = ref<boolean>(false);
 const chartData = ref<ApexCandlesSeries[]>([]);
-const dataService = ref<IDataService<any, any>>(new TwelveDataService());
+const dataService = ref<IDataService<TwelveDataAPI, ApexCandlesSeries>>(new TwelveDataService());
 
-const formSubmitHandler = (marketFormData: IRequestFormData) => {
+const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void> => {
     console.log('FORM SUBMIT FIRED!');
-    console.log(marketFormData);
-    // VALIDATE DATA
-    // FETCH DATA
+
+    const { fetchData, transformData } = dataService.value;
+
+    const isValid = await ValidationService.validateClass(RequestFormDataDTO, marketFormData);
+
+    if (!isValid)
+        return alert('Incorrect form data!');
+
+    const marketData = await fetchData(
+        {
+            baseUrl: 'https://api.twelvedata.com/time_series?apikey=secret&format=JSON',
+            queryParams: { ...marketFormData }
+        })
+
+    const marketDataChart = transformData(marketData);
+
+    chartData.value = [marketDataChart];
 }
 
 onMounted(async () => {

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export interface ApexCandlesSeries {
     name: string,
@@ -7,14 +7,14 @@ export interface ApexCandlesSeries {
 }
 
 export interface CandlePrice {
-    x: Date,
+    x: number,
     y: [number, number, number, number],
 }
 
 class CandlePriceDTO implements CandlePrice {
     @IsNotEmpty()
-    @IsDate()
-    x: Date;
+    @IsNumber()
+    x: number;
 
     @IsNotEmpty()
     @IsNumber({}, { each: true })

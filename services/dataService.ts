@@ -28,7 +28,7 @@ export class TwelveDataService implements IDataService<TwelveDataAPI, ApexCandle
             .map(
                 ({ datetime, open, high, low, close }) =>
                 ({
-                    x: new Date(datetime),
+                    x: new Date(datetime).getTime(),
                     y: [parseInt(open), parseInt(high), parseInt(low), parseInt(close)]
                 }));
 
