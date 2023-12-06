@@ -50,5 +50,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+  env: {
+    API_URI: 'https://api.twelvedata.com/time_series?apikey=0dae4855d88b45cc828f312778eb6474&format=JSON'
   }
 }

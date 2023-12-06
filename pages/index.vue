@@ -34,9 +34,12 @@ const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void
 
     const marketData = await fetchData(
         {
-            baseUrl: 'https://api.twelvedata.com/time_series?apikey=secret&format=JSON',
+            baseUrl: process.env.API_URI ?? 'localhost:3000/getData',
             queryParams: { ...marketFormData }
         })
+
+    if (!marketData.meta && !marketData.values)
+        return alert('Data fetch failed!');
 
     const marketDataChart = transformData(marketData);
 
