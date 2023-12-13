@@ -10,14 +10,14 @@ export interface ErrorAPIMessage extends BaseAPIMessage {
 export interface SuccessAPIMessage extends BaseAPIMessage {
     status: 'success';
     meta: {
-        start_date: Date;
-        end_date: Date;
+        start_date: string;
+        end_date: string;
         symbol: string;
         interval: string;
         data_size: number;
     };
     data: {
-        datetime: Date;
+        datetime: string;
         open: number;
         high: number;
         low: number;

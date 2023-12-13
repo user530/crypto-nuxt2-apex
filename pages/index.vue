@@ -8,10 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import ChartComponent from '~/components/ChartComponent.vue';
 import ControlFormComponent from '~/components/ControlFormComponent.vue';
-import { ApexCandlesSeries, CandlePrice } from '~/types/chartTypes';
+import { ApexCandlesSeries } from '~/types/chartTypes';
 import { IRequestFormData, RequestFormDataDTO } from '~/types/requestFormData';
 import { IDataService } from '~/types/dataService';
 import { SuccessAPIMessage, ErrorAPIMessage } from '~/types/responseCryptoDTO';
@@ -25,6 +25,8 @@ const dataService = ref<IDataService<SuccessAPIMessage | ErrorAPIMessage, ApexCa
 const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void> => {
     console.log('FORM SUBMIT FIRED!');
     try {
+        isLoaded.value = false;
+
         const { fetchData, transformData } = dataService.value;
 
         const isValid = await ValidationService.validateClass(RequestFormDataDTO, marketFormData);
@@ -36,57 +38,27 @@ const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void
 
         const marketData = await fetchData(
             {
-                baseUrl: process.env.API_URI ?? 'localhost:3000/getData',
+                baseUrl: process.env.API_URI ?? 'localhost:5000/getData',
                 queryParams: { ...marketFormData }
             })
 
         console.log(marketData)
 
-        if (!marketData.meta && !marketData.values)
-            return alert('Data fetch failed!');
+        if (marketData.status === 'error')
+            throw new Error('Data fetch failed!');
 
         const marketDataChart = transformData(marketData);
 
+        console.log('TRANSFORMED DATA')
+        console.log(marketDataChart)
+
         chartData.value = [marketDataChart];
+
+        isLoaded.value = true;
     } catch (error) {
         console.error(error);
     }
 
 }
-
-onMounted(async () => {
-    console.log('Mounted fired!');
-    try {
-        isLoaded.value = false;
-        // console.log('BEFORE FETCH!');
-        // const res = await fetch('/data.json');
-        // const data = await res.json();
-        // console.log('AFTER FETCH!');
-        // console.log(data);
-        // const { dataSeries } = data;
-
-        // if (!dataSeries)
-        //     throw new Error('Failed to extract data series from the request!');
-
-        // const toDataset = dataSeries.map(
-        //     (dataItem: {
-        //         x: number,
-        //         y: number[]
-        //     }) => ({ x: new Date(dataItem.x), y: dataItem.y })
-        // );
-
-        // const newCandleDataset: ApexCandlesSeries[] = [{
-        //     name: 'series-1',
-        //     data: toDataset as CandlePrice[]
-        // }];
-
-        // chartData.value = newCandleDataset;
-
-        // isLoaded.value = true;
-    } catch (error) {
-        console.error(error);
-    }
-})
-
 
 </script>

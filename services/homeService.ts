@@ -39,9 +39,9 @@ export class HomeApiDataService implements IDataService<ErrorAPIMessage | Succes
             const { meta: { start_date, end_date, symbol, interval }, data } = inputData;
 
             const newData: ApexCandlesSeries = {
-                name: `Ticker: ${symbol}. Interval: ${interval}. Date range: ${start_date.toUTCString()}-${end_date.toUTCString()}`,
+                name: `Ticker: ${symbol}. Interval: ${interval}. Date range: ${new Date(start_date).toUTCString()}-${new Date(end_date).toUTCString()}`,
                 data: data.map(({ datetime, open, high, low, close }) => ({
-                    x: datetime.getTime(),
+                    x: new Date(datetime).getTime(),
                     y: [open, high, low, close]
                 }))
             }
