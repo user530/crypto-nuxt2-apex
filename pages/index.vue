@@ -23,7 +23,6 @@ const chartData = ref<ApexCandlesSeries[]>([]);
 const dataService = ref<IDataService<SuccessAPIMessage | ErrorAPIMessage, ApexCandlesSeries>>(new HomeApiDataService());
 
 const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void> => {
-    console.log('FORM SUBMIT FIRED!');
     try {
         isLoaded.value = false;
 
@@ -34,23 +33,16 @@ const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void
         if (!isValid)
             return alert('Incorrect form data!');
 
-        console.log(marketFormData)
-
         const marketData = await fetchData(
             {
                 baseUrl: process.env.API_URI ?? 'localhost:5000/getData',
                 queryParams: { ...marketFormData }
             })
 
-        console.log(marketData)
-
         if (marketData.status === 'error')
             throw new Error('Data fetch failed!');
 
         const marketDataChart = transformData(marketData);
-
-        console.log('TRANSFORMED DATA')
-        console.log(marketDataChart)
 
         chartData.value = [marketDataChart];
 
