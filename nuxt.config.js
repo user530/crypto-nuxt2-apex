@@ -52,6 +52,6 @@ export default {
   build: {
   },
   env: {
-    API_URI: 'https://api.twelvedata.com/time_series?apikey=0dae4855d88b45cc828f312778eb6474&format=JSON'
+    API_URI: 'http://localhost:3456/api/v1/crypto?'
   }
 }

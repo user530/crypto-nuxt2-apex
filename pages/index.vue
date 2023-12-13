@@ -13,65 +13,76 @@ import ChartComponent from '~/components/ChartComponent.vue';
 import ControlFormComponent from '~/components/ControlFormComponent.vue';
 import { ApexCandlesSeries, CandlePrice } from '~/types/chartTypes';
 import { IRequestFormData, RequestFormDataDTO } from '~/types/requestFormData';
-import { TwelveDataAPI } from '~/types/twelveDataAPI';
 import { IDataService } from '~/types/dataService';
-import { TwelveDataService } from '~/services/dataService';
+import { SuccessAPIMessage, ErrorAPIMessage } from '~/types/responseCryptoDTO';
+import { HomeApiDataService } from '~/services/homeService';
 import { ValidationService } from '~/services/validationService';
 
 const isLoaded = ref<boolean>(false);
 const chartData = ref<ApexCandlesSeries[]>([]);
-const dataService = ref<IDataService<TwelveDataAPI, ApexCandlesSeries>>(new TwelveDataService());
+const dataService = ref<IDataService<SuccessAPIMessage | ErrorAPIMessage, ApexCandlesSeries>>(new HomeApiDataService());
 
 const formSubmitHandler = async (marketFormData: IRequestFormData): Promise<void> => {
     console.log('FORM SUBMIT FIRED!');
+    try {
+        const { fetchData, transformData } = dataService.value;
 
-    const { fetchData, transformData } = dataService.value;
+        const isValid = await ValidationService.validateClass(RequestFormDataDTO, marketFormData);
 
-    const isValid = await ValidationService.validateClass(RequestFormDataDTO, marketFormData);
+        if (!isValid)
+            return alert('Incorrect form data!');
 
-    if (!isValid)
-        return alert('Incorrect form data!');
+        console.log(marketFormData)
 
-    const marketData = await fetchData(
-        {
-            baseUrl: process.env.API_URI ?? 'localhost:3000/getData',
-            queryParams: { ...marketFormData }
-        })
+        const marketData = await fetchData(
+            {
+                baseUrl: process.env.API_URI ?? 'localhost:3000/getData',
+                queryParams: { ...marketFormData }
+            })
 
-    if (!marketData.meta && !marketData.values)
-        return alert('Data fetch failed!');
+        console.log(marketData)
 
-    const marketDataChart = transformData(marketData);
+        if (!marketData.meta && !marketData.values)
+            return alert('Data fetch failed!');
 
-    chartData.value = [marketDataChart];
+        const marketDataChart = transformData(marketData);
+
+        chartData.value = [marketDataChart];
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
 onMounted(async () => {
+    console.log('Mounted fired!');
     try {
         isLoaded.value = false;
-        const res = await fetch('/data.json');
-        const data = await res.json();
+        // console.log('BEFORE FETCH!');
+        // const res = await fetch('/data.json');
+        // const data = await res.json();
+        // console.log('AFTER FETCH!');
+        // console.log(data);
+        // const { dataSeries } = data;
 
-        const { dataSeries } = data;
+        // if (!dataSeries)
+        //     throw new Error('Failed to extract data series from the request!');
 
-        if (!dataSeries)
-            throw new Error('Failed to extract data series from the request!');
+        // const toDataset = dataSeries.map(
+        //     (dataItem: {
+        //         x: number,
+        //         y: number[]
+        //     }) => ({ x: new Date(dataItem.x), y: dataItem.y })
+        // );
 
-        const toDataset = dataSeries.map(
-            (dataItem: {
-                x: number,
-                y: number[]
-            }) => ({ x: new Date(dataItem.x), y: dataItem.y })
-        );
+        // const newCandleDataset: ApexCandlesSeries[] = [{
+        //     name: 'series-1',
+        //     data: toDataset as CandlePrice[]
+        // }];
 
-        const newCandleDataset: ApexCandlesSeries[] = [{
-            name: 'series-1',
-            data: toDataset as CandlePrice[]
-        }];
+        // chartData.value = newCandleDataset;
 
-        chartData.value = newCandleDataset;
-
-        isLoaded.value = true;
+        // isLoaded.value = true;
     } catch (error) {
         console.error(error);
     }
