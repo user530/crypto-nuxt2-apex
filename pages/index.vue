@@ -1,9 +1,13 @@
 <template>
     <div id="page-wrapper" class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-24">Crypto Prices
+        <h1 class="text-center font-bold leading-7 text-gray-900 sm:truncate sm:text-5xl sm:tracking-tight mb-24 py-6">
+            Crypto Prices
         </h1>
-        <ControlFormComponent @marketFormSubmitted="formSubmitHandler" />
-        <ChartComponent v-if="isLoaded" :dataSeries="chartData" />
+        <div class="content-body flex flex-col md:flex-row gap-8">
+            <ChartComponent v-if="isLoaded" :dataSeries="chartData" class="grow" />
+            <ChartPlaceholder v-else class="grow" />
+            <ControlFormComponent @marketFormSubmitted="formSubmitHandler" />
+        </div>
     </div>
 </template>
 
@@ -11,6 +15,7 @@
 import { ref } from "vue";
 import ChartComponent from '~/components/ChartComponent.vue';
 import ControlFormComponent from '~/components/ControlFormComponent.vue';
+import ChartPlaceholder from '~/components/ChartPlaceholder.vue';
 import { ApexCandlesSeries } from '~/types/chartTypes';
 import { IRequestFormData, RequestFormDataDTO } from '~/types/requestFormData';
 import { IDataService } from '~/types/dataService';
