@@ -52,6 +52,6 @@ export default {
   build: {
   },
   env: {
-    API_URI: 'http://localhost:3456/api/v1/crypto?'
+    API_URI: process.env.BE_API_URI
   }
 }
