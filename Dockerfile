@@ -1,22 +1,25 @@
-FROM node:21.2.0-alpine
+# Build stage
+FROM node:current-alpine3.19 AS build
 
-WORKDIR /crypto-nuxt
+WORKDIR /build
 
-COPY package.json .
+COPY package*.json .
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 ARG API_URI
-
 ENV BE_API_URI=${API_URI}
+# Get static files using generate
+RUN npm run generate
 
-RUN npm run build
+# PRODUCTION STAGE - Nginx serve
+FROM nginx AS prod
+
+COPY --from=build --chown=node:node /build/nginx.conf /etc/nginx/nginx.conf 
+COPY --from=build --chown=node:node /build/dist /usr/share/nginx/html
 
 EXPOSE 3000
 
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
-
-CMD [ "npm", "run", "start" ]
+CMD ["nginx", "-g", "daemon off;"]
