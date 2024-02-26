@@ -8,6 +8,10 @@ RUN npm install
 
 COPY . .
 
+ARG API_URI
+
+ENV BE_API_URI=${API_URI}
+
 RUN npm run build
 
 EXPOSE 3000
