@@ -14,7 +14,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "core-js": "^3.25.3",
-    "nuxt": "^2.15.8",
+    "nuxt": "^3.10.3",
     "vue": "^2.7.10",
     "vue-apexcharts": "^1.6.2",
     "vue-server-renderer": "^2.7.10",
